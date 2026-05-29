@@ -4,10 +4,10 @@ document.getElementById('submitBtn').addEventListener('click', function() {
     
     if (jokeInput.value.trim() !== '') {
         // Toggle between bennet1.png and bennet2.png
-        if (bennetImage.src.includes('bennet1.png')) {
-            bennetImage.src = 'bennet2.png';
+        if (bennetImage.src.includes('Assets/bennet1.png')) {
+            bennetImage.src = 'Assets/bennet2.png';
         } else {
-            bennetImage.src = 'bennet1.png';
+            bennetImage.src = 'Assets/bennet1.png';
         }
         
         // Clear the text box
