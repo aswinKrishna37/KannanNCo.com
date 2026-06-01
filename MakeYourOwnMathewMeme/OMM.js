@@ -22,17 +22,17 @@
     function drawMeme() {
         // Clear canvas and draw base image
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, -100, 0);
 
         // Configure Text Settings
         ctx.fillStyle = "black";
         ctx.font = "bold 90px sans-serif"; // Adjust size relative to your original image resolution
-        ctx.textAlign = "center";
+        ctx.textAlign = "right";
         ctx.textBaseline = "middle";
 
         // Coordinates for the text area (Left side of the image)
         // Adjust these percentages depending on your background image proportions
-        const centerX = canvas.width * 0.35; 
+        const centerX = canvas.width * 0.55; 
         const centerY = canvas.height * 0.45;
         const lineHeight = 110; // Space between lines
 
