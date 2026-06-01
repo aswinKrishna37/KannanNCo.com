@@ -64,7 +64,7 @@ function playRound(playerChoice) {
         let state = 'happy'; // Default happy state for computer
 
         if (playerChoice === computerChoice) {
-            resultText = `It's a Tie! Both played ${capitalize(playerChoice)}.`;
+            resultText = `Oooo pwoli! It's a Tie! Both played ${capitalize(playerChoice)}.`;
             state = 'happy'; // Athulraj is happy with a tie
         } else if (
             (playerChoice === 'rock' && computerChoice === 'scissors') ||
@@ -72,11 +72,11 @@ function playRound(playerChoice) {
             (playerChoice === 'scissors' && computerChoice === 'paper')
         ) {
             playerScore++;
-            resultText = `You Win! ${capitalize(playerChoice)} beats ${capitalize(computerChoice)}.`;
+            resultText = `Shey pwoli! You Win! ${capitalize(playerChoice)} beats ${capitalize(computerChoice)}.`;
             state = 'sad'; // Athulraj lost, so he is sad
         } else {
             computerScore++;
-            resultText = `Athulraj Wins! ${capitalize(computerChoice)} beats ${capitalize(playerChoice)}.`;
+            resultText = `Yeee pwoli! I Won! ${capitalize(computerChoice)} beats ${capitalize(playerChoice)}.`;
             state = 'happy'; // Athulraj won, so he is happy
         }
 

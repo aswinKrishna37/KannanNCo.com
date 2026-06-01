@@ -21,8 +21,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 40px 20px;
+    height: 100vh;
+    padding: 15px;
+    overflow: hidden;
 }
 
 .container {
@@ -30,24 +31,27 @@ body {
     max-width: 700px;
     width: 100%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
 }
 
 /* Header */
 #heading {
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
 }
 
 #heading h1 {
     font-family: var(--font-heading);
-    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-size: clamp(1rem, 5vw, 1.6rem);
     font-weight: 800;
     letter-spacing: -0.02em;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 #heading h3 {
-    font-size: clamp(0.95rem, 3vw, 1.2rem);
+    font-size: clamp(0.65rem, 2vw, 0.8rem);
     font-weight: normal;
     color: var(--text-secondary);
 }
@@ -57,19 +61,19 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 35px;
+    gap: 8px;
+    margin-bottom: 5px;
 }
 
 .scoreboard {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     border: 2px solid #000000;
-    padding: 8px 20px;
+    padding: 4px 12px;
     border-radius: 8px;
     background-color: #ffffff;
-    height: 48px;
+    height: 36px;
 }
 
 .score-card {
@@ -80,7 +84,7 @@ body {
 
 .score-label {
     font-family: var(--font-heading);
-    font-size: 0.9rem;
+    font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-secondary);
@@ -88,27 +92,27 @@ body {
 
 .score-val {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #000000;
 }
 
 .score-divider {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #000000;
 }
 
 .reset-btn {
-    height: 48px;
-    padding: 0 25px;
+    height: 36px;
+    padding: 0 16px;
     background-color: #000000;
     color: #ffffff;
     border: 2px solid #000000;
     border-radius: 8px;
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -121,16 +125,21 @@ body {
 
 /* Image container (identical to MBL) */
 .image-container {
-    margin-bottom: 40px;
+    margin-bottom: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    min-height: 0;
 }
 
 #gameImage {
     max-width: 100%;
-    width: 450px;
+    max-height: 100%;
+    width: auto;
     height: auto;
+    object-fit: contain;
     border: 2px solid #000000;
     border-radius: 8px;
 }
@@ -153,39 +162,40 @@ body {
 /* Status Text */
 .game-status {
     font-family: var(--font-heading);
-    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    font-size: clamp(0.65rem, 2vw, 0.85rem);
     font-weight: 800;
     color: #000000;
-    margin-top: 25px;
-    min-height: 38px;
+    margin-top: 4px;
+    min-height: 20px;
 }
 
 /* Choices (styled precisely like MBL buttons) */
 .choices-container {
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    gap: 8px;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    flex-shrink: 0;
 }
 
 .choice-btn {
     flex: 1;
-    height: 54px;
+    height: 40px;
     background-color: #000000;
     color: #ffffff;
     border: 2px solid #000000;
     border-radius: 8px;
     font-family: var(--font-heading);
-    font-size: 1.1em;
+    font-size: 0.75em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
 }
 
 .choice-btn:hover {
@@ -198,7 +208,7 @@ body {
 }
 
 .choice-emoji {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
 }
 
 /* Responsive details */
