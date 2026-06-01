@@ -9,13 +9,13 @@ const choiceButtons = document.querySelectorAll('.choice-btn');
 // Choices configuration
 const choices = ['rock', 'paper', 'scissors'];
 const imagePaths = {
-    'default': 'Assets/default.png',
-    'rock_happy': 'Assets/rock_happy.png',
-    'rock_sad': 'Assets/rock_sad.png',
-    'paper_happy': 'Assets/paper_happy.png',
-    'paper_sad': 'Assets/paper_sad.png',
-    'scissors_happy': 'Assets/scissors_happy.png',
-    'scissors_sad': 'Assets/scissors_sad.png'
+    'default': 'Assets/Athul-Scissors.png',
+    'rock_happy': 'Assets/Athul-Stone.png',
+    'rock_sad': 'Assets/Athul-Stone.png',
+    'paper_happy': 'Assets/Athul-Paper.png',
+    'paper_sad': 'Assets/Athul-Paper.png',
+    'scissors_happy': 'Assets/Athul-Scissors.png',
+    'scissors_sad': 'Assets/Athul-Scissors.png'
 };
 
 // Load scores from localStorage
