@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Outfit:wght@600;800&display=swap');
+
+:root {
+    --bg-color: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #555555;
+    --font-heading: 'Outfit', Arial, sans-serif;
+    --font-body: 'Inter', Arial, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,14 +15,14 @@
 }
 
 body {
-    background-color: #ffffff;
-    color: #000000;
-    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 40px 20px;
 }
 
 .container {
@@ -22,37 +32,44 @@ body {
 }
 
 h1 {
-    font-size: 3.5em;
-    margin-bottom: 50px;
-    font-weight: bold;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    margin-bottom: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .image-container {
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 #bennetImage {
     max-width: 100%;
     width: 450px;
     height: auto;
-    /*border: 2px solid #dddddd;*/
 }
 
 .form-container {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 #jokeInput {
-    padding: 20px;
+    flex: 1;
+    padding: 14px 20px;
     border: 2px solid #000000;
+    border-radius: 8px;
     font-size: 1.1em;
-    font-family: Arial, sans-serif;
-    resize: vertical;
-    min-height: 150px;
+    font-family: var(--font-body);
     background-color: #ffffff;
     color: #000000;
+    resize: none;
+    height: 54px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 #jokeInput::placeholder {
@@ -61,25 +78,82 @@ h1 {
 
 #jokeInput:focus {
     outline: none;
-    border: 2px solid #000000;
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
-#submitBtn {
-    padding: 16px 40px;
+#submitBtn, #resetBtn {
+    height: 54px;
+    padding: 0 40px;
     background-color: #000000;
     color: #ffffff;
     border: 2px solid #000000;
-    font-size: 1.2em;
-    font-weight: bold;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 1.1em;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-#submitBtn:hover {
+#submitBtn:hover, #resetBtn:hover {
     background-color: #ffffff;
     color: #000000;
 }
 
-#submitBtn:active {
+#submitBtn:active, #resetBtn:active {
     transform: scale(0.98);
 }
+
+.hidden {
+    display: none !important;
+}
+
+#successContainer {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#successMessage {
+    font-family: var(--font-heading);
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-weight: 800;
+    color: #000000;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px 15px;
+    }
+    
+    h1 {
+        margin-bottom: 30px;
+    }
+    
+    .image-container {
+        margin-bottom: 30px;
+    }
+    
+    #bennetImage {
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    .form-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    #jokeInput {
+        width: 100%;
+        height: 80px;
+    }
+    
+    #submitBtn, #resetBtn {
+        width: 100%;
+    }
+}
+

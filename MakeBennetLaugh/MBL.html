@@ -13,10 +13,14 @@
         
         <div class="image-container">
             <img id="bennetImage" src="Assets/bennet1.png" alt="Bennett">
+            <div id="successContainer" class="hidden">
+                <p id="successMessage">You made Bennet laugh!</p>
+                <button id="resetBtn">Tell another joke</button>
+            </div>
         </div>
         
         <div class="form-container">
-            <textarea id="jokeInput" placeholder="Enter your joke..."></textarea>
+            <textarea id="jokeInput" placeholder="Enter your joke..." autocomplete="off"></textarea>
             <button id="submitBtn">Submit</button>
         </div>
     </div>
