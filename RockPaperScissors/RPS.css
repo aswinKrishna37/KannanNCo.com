@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Outfit:wght@600;800&display=swap');
+
+:root {
+    --bg-color: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #555555;
+    --font-heading: 'Outfit', Arial, sans-serif;
+    --font-body: 'Inter', Arial, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    text-align: center;
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+}
+
+/* Header */
+#heading {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+#heading h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 5px;
+}
+
+#heading h3 {
+    font-size: clamp(0.95rem, 3vw, 1.2rem);
+    font-weight: normal;
+    color: var(--text-secondary);
+}
+
+/* Scoreboard styling */
+.scoreboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.scoreboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 2px solid #000000;
+    padding: 8px 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    height: 48px;
+}
+
+.score-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.score-label {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.score-val {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #000000;
+}
+
+.score-divider {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #000000;
+}
+
+.reset-btn {
+    height: 48px;
+    padding: 0 25px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Image container (identical to MBL) */
+.image-container {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#gameImage {
+    max-width: 100%;
+    width: 450px;
+    height: auto;
+    border: 2px solid #000000;
+    border-radius: 8px;
+}
+
+/* Shake Animation */
+.shake-img {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0% { transform: translateY(0) rotate(0deg); }
+    15% { transform: translateY(-15px) rotate(-5deg); }
+    30% { transform: translateY(10px) rotate(5deg); }
+    45% { transform: translateY(-10px) rotate(-3deg); }
+    60% { transform: translateY(5px) rotate(3deg); }
+    75% { transform: translateY(-3px) rotate(-1deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Status Text */
+.game-status {
+    font-family: var(--font-heading);
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    font-weight: 800;
+    color: #000000;
+    margin-top: 25px;
+    min-height: 38px;
+}
+
+/* Choices (styled precisely like MBL buttons) */
+.choices-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.choice-btn {
+    flex: 1;
+    height: 54px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.choice-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.choice-btn:active {
+    transform: scale(0.98);
+}
+
+.choice-emoji {
+    font-size: 1.2rem;
+}
+
+/* Responsive details */
+@media (max-width: 600px) {
+    body {
+        padding: 40px 15px;
+    }
+
+    #heading h1 {
+        margin-bottom: 25px;
+    }
+
+    .scoreboard-container {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .scoreboard {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .reset-btn {
+        width: 100%;
+    }
+
+    #gameImage {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .choices-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .choice-btn {
+        width: 100%;
+    }
+}

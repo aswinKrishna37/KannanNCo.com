@@ -3,96 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOSS Lab Meme Generator</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
-
-        h1 {
-            margin-top: 0;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 80px;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 1rem;
-            resize: none;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        textarea:focus {
-            border-color: var(--primary);
-        }
-
-        .preview-box {
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #eee;
-        }
-
-        canvas {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background-color: #1d4ed8;
-        }
-    </style>
+    <title>YT Shorts Meme Generator</title>
+    <link rel="stylesheet" href="OMM.css">
 </head>
 <body>
 
@@ -107,73 +19,9 @@
         <canvas id="memeCanvas"></canvas>
     </div>
 
-    <button class="btn" id="downloadBtn">Download Image</button>
+    <button class="btn" id="downloadBtn">Download Meme</button>
 </div>
 
-<script>
-    const canvas = document.getElementById('memeCanvas');
-    const ctx = canvas.getContext('2d');
-    const textInput = document.getElementById('textInput');
-    const downloadBtn = document.getElementById('downloadBtn');
-
-    // 1. Load your textless background image
-    const img = new Image();
-    // CHANGE THIS TO YOUR TEXTLESS IMAGE FILENAME
-    img.src = 'background.jpg'; 
-
-    // Once the image loads, initialize canvas sizes and draw
-    img.onload = function() {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        // Default starting text matching your original image style
-        textInput.value = "FOSS Lab\nis that\nway";
-        drawMeme();
-    };
-
-    // 2. Function to draw image and wrap text onto the canvas
-    function drawMeme() {
-        // Clear canvas and draw base image
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-
-        // Configure Text Settings
-        ctx.fillStyle = "black";
-        ctx.font = "bold 90px sans-serif"; // Adjust size relative to your original image resolution
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        // Coordinates for the text area (Left side of the image)
-        // Adjust these percentages depending on your background image proportions
-        const centerX = canvas.width * 0.35; 
-        const centerY = canvas.height * 0.45;
-        const lineHeight = 110; // Space between lines
-
-        // Split text by new lines
-        const lines = textInput.value.split('\n');
-        
-        // Calculate total block height to perfectly center multiple lines vertically
-        const totalHeight = (lines.length - 1) * lineHeight;
-        let startY = centerY - (totalHeight / 2);
-
-        // Draw each line
-        lines.forEach((line) => {
-            ctx.fillText(line, centerX, startY);
-            startY += lineHeight;
-        });
-    }
-
-    // 3. Listen to typing inputs to update preview in real-time
-    textInput.addEventListener('input', drawMeme);
-
-    // 4. Handle Download action
-    downloadBtn.addEventListener('click', function() {
-        const dataURL = canvas.toDataURL('image/jpeg', 0.9);
-        const link = document.createElement('a');
-        link.download = 'custom-foss-way.jpg';
-        link.href = dataURL;
-        link.click();
-    });
-</script>
-
+<script src="OMM.js"></script>
 </body>
 </html>
