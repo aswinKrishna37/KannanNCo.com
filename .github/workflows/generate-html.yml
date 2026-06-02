@@ -3,7 +3,7 @@ name: Generate HTML Dashboard
 on:
   push:
     branches:
-      - main # Change to master if your default branch is named master
+      - main # Change this to master if your default branch is named master
 
 permissions:
   contents: write
@@ -21,22 +21,39 @@ jobs:
       with:
         node-version: 18
 
-    - name: Compile template into index.html
+    - name: Build index.html from scratch
       run: |
         node -e "
         const fs = require('fs');
         const path = require('path');
 
         const pagesDir = path.join(process.cwd(), 'Pages');
-        const templatePath = path.join(process.cwd(), 'template.html');
         const indexPath = path.join(process.cwd(), 'index.html');
 
-        if (!fs.existsSync(templatePath)) {
-            console.error('Error: template.html missing!');
-            process.exit(1);
-        }
+        // 1. Define the Top Portion of your website
+        const htmlTop = \`<!DOCTYPE html>
+        <html lang=\"en\">
+        <head>
+            <meta charset=\"UTF-8\">
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+            <title>KannanNCo</title>
+            <link rel=\"icon\" type=\"image/png\" href=\"Assets/favicon.png\" />
+            <link rel=\"stylesheet\" href=\"styles.css\">
+        </head>
+        <body>
+            <div id=\"heading\">
+                <h1>www.KannanNCo.com</h1>
+                <h3>doubloo doubloo doubloo dot https slash KannanNCo dot com</h3>
+            </div>
 
-        // Find all game directories inside /Pages
+            <div class=\"card-grid\">\n\`;
+
+        // 2. Define the Bottom Portion of your website
+        const htmlBottom = \`    </div>
+        </body>
+        </html>\`;
+
+        // 3. Scan the /Pages directory for games
         let folders = [];
         if (fs.existsSync(pagesDir)) {
             folders = fs.readdirSync(pagesDir).filter(file => {
@@ -44,7 +61,7 @@ jobs:
             });
         }
 
-        // Build the HTML cards string block
+        // 4. Generate the middle card components dynamically
         let cardsHtml = '';
         folders.forEach(folder => {
             const metaPath = path.join(pagesDir, folder, 'meta.json');
@@ -74,24 +91,12 @@ jobs:
             cardsHtml += '        </div>\n\n';
         });
 
-        // Read template layout
-        let templateContent = fs.readFileSync(templatePath, 'utf8');
+        // 5. Join all three pieces cleanly together
+        const finalHtml = htmlTop + cardsHtml + htmlBottom;
 
-        const commentRegex = /()[\s\S]*?()/;
-        let updatedContent = '';
-
-        if (commentRegex.test(templateContent)) {
-            // Standard injection using placeholder comments
-            updatedContent = templateContent.replace(commentRegex, '$1\n' + cardsHtml + '        $2');
-        } else {
-            // Fallback safety injection directly inside the card-grid div class if comments were deleted
-            console.log('Target comments missing, running fallback selector injection...');
-            const fallbackRegex = /(<div class=\"card-grid\">)/;
-            updatedContent = templateContent.replace(fallbackRegex, '$1\n\n' + cardsHtml + '        ');
-        }
-
-        fs.writeFileSync(indexPath, updatedContent);
-        console.log('Successfully generated clean index.html with ' + folders.length + ' cards!');
+        // 6. Write the final string directly into index.html
+        fs.writeFileSync(indexPath, finalHtml);
+        console.log('Successfully compiled raw pieces into index.html with ' + folders.length + ' cards!');
         "
 
     - name: Commit and Push updated index.html
