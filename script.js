@@ -1,3 +1,3 @@
 function redirect(page_identifier) {
-    window.location.href = `Pages/${page_identifier}/index.html`;
+    window.location.href = `Pages/${page_identifier}/`;
 }
