@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;        /* Stack items vertically */
+    justify-content: space-between; /* Push first item to top, last to bottom */
+    min-height: 100vh;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* .header h1{
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} */
+
+.header img {
+    display: block;
+    margin: 0 auto;
+    max-width: 80%;
+    max-height: 15vh;
+    width: auto;
+    height: auto;
+}
+
+
+#IMAGE{
+    display: block;
+    max-height: 50vh;
+    max-width: 80%;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+}
+
+.cortisol-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5vh;
+}
+
+.scale-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.scale-frame {
+    display: block;
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+}
+
+.scale-pointer {
+    position: absolute;
+    width: auto;
+    height: auto;
+    transform-origin: 17.5px 111px;
+    transition: transform 0.05s ease-out;
+    top: 50%;
+    left: 50%;
+    margin-left: -17.5px;
+    margin-top: -40px;
+}
