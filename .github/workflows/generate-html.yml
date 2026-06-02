@@ -1,28 +1,22 @@
-name: Generate and Deploy HTML Dashboard
+name: Generate HTML Dashboard
 
 on:
   push:
     branches:
-      - main # Change to master if your default branch is named master
+      - main # Change this to master if your default branch is named master
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  contents: write
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Fetch all history so git merges/pushes work smoothly
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -46,6 +40,7 @@ jobs:
             <title>KannanNCo</title>
             <link rel=\"icon\" type=\"image/png\" href=\"Assets/favicon.png\" />
             <link rel=\"stylesheet\" href=\"styles.css\">
+            <script src=\"script.js\" defer></script>
         </head>
         <body>
             <div id=\"heading\">
@@ -120,14 +115,23 @@ jobs:
         console.log('Successfully built custom ordered index.html!');
         "
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: '.'
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+    - name: Commit and Push updated index.html back to repo
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # Stage the generated index file
+        git add index.html
+        
+        # Check if there are actual layout changes before trying to push
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Automated compile of index.html [skip ci]"
+          
+          # Pull down any incoming rapid changes from your friend using rebase to prevent local histories from breaking
+          git pull origin main --rebase
+          
+          # Push cleanly back up to the cloud
+          git push origin main
+        else
+          console.log("No layout changes detected. Skipping push.")
+        fi
