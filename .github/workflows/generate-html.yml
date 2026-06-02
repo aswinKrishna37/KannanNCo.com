@@ -1,17 +1,25 @@
-name: Generate HTML Dashboard
+name: Generate and Deploy HTML Dashboard
 
 on:
   push:
     branches:
-      - main # Change this to master if your default branch is named master
+      - main # Change to master if your default branch is named master
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -30,7 +38,6 @@ jobs:
         const pagesDir = path.join(process.cwd(), 'Pages');
         const indexPath = path.join(process.cwd(), 'index.html');
 
-        // 1. Define the Top Portion of your website
         const htmlTop = \`<!DOCTYPE html>
         <html lang=\"en\">
         <head>
@@ -48,12 +55,10 @@ jobs:
 
             <div class=\"card-grid\">\n\`;
 
-        // 2. Define the Bottom Portion of your website
         const htmlBottom = \`    </div>
         </body>
         </html>\`;
 
-        // 3. Scan the /Pages directory for games
         let folders = [];
         if (fs.existsSync(pagesDir)) {
             folders = fs.readdirSync(pagesDir).filter(file => {
@@ -61,15 +66,17 @@ jobs:
             });
         }
 
-        // 4. Generate the middle card components dynamically
-        let cardsHtml = '';
+        // 1. Gather all game data arrays first to allow sorting
+        let gamesList = [];
+
         folders.forEach(folder => {
             const metaPath = path.join(pagesDir, folder, 'meta.json');
             const expectedBannerPath = path.join(pagesDir, folder, 'banner.png');
             
             let title = folder.replace(/([A-Z])/g, ' $1').trim();
             let description = 'Click to play!';
-            
+            let order = 9999; // Default large number so unordered games drop to the bottom
+
             let banner = fs.existsSync(expectedBannerPath) 
                 ? 'Pages/' + folder + '/banner.png' 
                 : 'Assets/default-banner.png';
@@ -79,30 +86,48 @@ jobs:
                     const metaData = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
                     title = metaData.title || title;
                     description = metaData.description || description;
+                    if (typeof metaData.order === 'number') {
+                        order = metaData.order;
+                    }
                 } catch (e) {
                     console.log('Error parsing meta.json in ' + folder);
                 }
             }
 
-            cardsHtml += '        <div class=\"card\" onclick=\"window.location.href=\'Pages/' + folder + '/index.html\'\">\n';
-            cardsHtml += '             <img src=\"' + banner + '\" alt=\"' + title + '\" onerror=\"this.src=\'Assets/default-banner.png\'\">\n';
-            cardsHtml += '             <h3>' + title + '</h3>\n';
-            cardsHtml += '             <p>' + description + '</p>\n';
+            gamesList.push({ folder, title, description, banner, order });
+        });
+
+        // 2. Sort the list by order index asc (lowest value first), fallback to alphabetical order
+        gamesList.sort((a, b) => {
+            if (a.order !== b.order) {
+                return a.order - b.order;
+            }
+            return a.title.localeCompare(b.title);
+        });
+
+        // 3. Loop through the sorted array objects and append HTML blocks
+        let cardsHtml = '';
+        gamesList.forEach(game => {
+            cardsHtml += '        <div class=\"card\" onclick=\"window.location.href=\'Pages/' + game.folder + '/index.html\'\">\n';
+            cardsHtml += '             <img src=\"' + game.banner + '\" alt=\"' + game.title + '\" onerror=\"this.src=\'Assets/default-banner.png\'\">\n';
+            cardsHtml += '             <h3>' + game.title + '</h3>\n';
+            cardsHtml += '             <p>' + game.description + '</p>\n';
             cardsHtml += '        </div>\n\n';
         });
 
-        // 5. Join all three pieces cleanly together
         const finalHtml = htmlTop + cardsHtml + htmlBottom;
-
-        // 6. Write the final string directly into index.html
         fs.writeFileSync(indexPath, finalHtml);
-        console.log('Successfully compiled raw pieces into index.html with ' + folders.length + ' cards!');
+        console.log('Successfully built custom ordered index.html!');
         "
 
-    - name: Commit and Push updated index.html
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add index.html
-        git diff-index --quiet HEAD || git commit -m "Automated compile of index.html [skip ci]"
-        git push
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '.'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

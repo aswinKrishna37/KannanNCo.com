@@ -1,4 +1,5 @@
 {
     "title": "Flappy Faheem",
-    "description": "You probably won't need a GPU for this"
+    "description": "You probably won't need a GPU for this",
+    "order": 1
 }
