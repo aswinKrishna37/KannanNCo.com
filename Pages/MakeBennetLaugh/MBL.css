@@ -23,6 +23,8 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 40px 20px;
+    transform: scale(0.9);
+    transform-origin: top center;
 }
 
 .container {
