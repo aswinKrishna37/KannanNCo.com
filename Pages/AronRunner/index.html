@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aron Runner Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            /* Ensures clicking the background works seamlessly on mobile devices */
+            touch-action: manipulation; 
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 8 / 3;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.75);
+            z-index: 10;
+        }
+
+        #ui-overlay.hidden {
+            display: none;
+        }
+
+        #game-title {
+            font-size: 26px;
+            color: #535353;
+            margin-bottom: 5px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        #score-summary {
+            font-family: monospace;
+            font-size: 16px;
+            color: #757575;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #535353;
+            background: #ffffff;
+            border: 2px solid #535353;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 20; /* Ensures the button sits reliably above global tap listeners */
+        }
+
+        .btn:hover {
+            color: #ffffff;
+            background: #535353;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-overlay">
+            <div id="game-title">DINO RUNNER</div>
+            <div id="score-summary">
+                <div>SCORE: <span id="final-score">00000</span></div>
+                <div>HIGH SCORE: <span id="final-highscore">00000</span></div>
+            </div>
+            <button id="start-btn" class="btn">START GAME</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME CONFIGURATION & STATE ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiOverlay = document.getElementById('ui-overlay');
+        const startBtn = document.getElementById('start-btn');
+        const gameTitle = document.getElementById('game-title');
+        const scoreSummary = document.getElementById('score-summary');
+        const finalScoreSpan = document.getElementById('final-score');
+        const finalHighscoreSpan = document.getElementById('final-highscore');
+
+        const BASE_WIDTH = 800;
+        const BASE_HEIGHT = 300;
+        canvas.width = BASE_WIDTH;
+        canvas.height = BASE_HEIGHT;
+
+        let gameSpeed = 6;
+        let score = 0;
+        let highScore = 0;
+        let isPlaying = false;
+        let animationFrameId;
+
+        // --- ASSET LOADING ---
+        const dinoImg = new Image();
+        dinoImg.src = 'dino.png'; 
+
+        const cactusImg = new Image();
+        cactusImg.src = 'cactus.png'; 
+
+        const fCloudImg = new Image();
+        fCloudImg.src = 'fcloud.png';
+
+        // --- ENTITY CLASSES ---
+        class Dino {
+            constructor() {
+                this.baseWidth = 40;
+                this.baseHeight = 80;
+                this.x = 50;
+                this.y = BASE_HEIGHT - this.baseHeight - 30;
+                this.groundY = this.y;
+                this.vy = 0;
+                this.gravity = 0.5;
+                this.jumpForce = -12;
+                this.isGrounded = true;
+            }
+
+            jump() {
+                if (this.isGrounded) {
+                    this.vy = this.jumpForce;
+                    this.isGrounded = false;
+                }
+            }
+
+            update() {
+                this.vy += this.gravity;
+                this.y += this.vy;
+
+                if (this.y >= this.groundY) {
+                    this.y = this.groundY;
+                    this.vy = 0;
+                    this.isGrounded = true;
+                }
+            }
+
+            draw() {
+                if (dinoImg.complete) {
+                    ctx.drawImage(dinoImg, this.x, this.y, this.baseWidth, this.baseHeight);
+                } else {
+                    ctx.fillStyle = '#535353';
+                    ctx.fillRect(this.x, this.y, this.baseWidth, this.baseHeight);
+                }
+            }
+
+            getBounds() {
+                return {
+                    left: this.x + 4,
+                    right: this.x + this.baseWidth - 4,
+                    top: this.y + 4,
+                    bottom: this.y + this.baseHeight
+                };
+            }
+        }
+
+        class Obstacle {
+            constructor() {
+                this.x = BASE_WIDTH + Math.random() * 100;
+                this.y = BASE_HEIGHT - 30;
+                this.isDouble = Math.random() > 0.5;
+
+                if (!this.isDouble) {
+                    this.srcWidthPercent = 0.571428571429;
+                    this.baseWidth = 32;
+                    this.baseHeight = 60;
+                } else {
+                    this.srcWidthPercent = 1.0;
+                    this.baseWidth = 56;
+                    this.baseHeight = 60;
+                }
+                this.y -= this.baseHeight;
+            }
+
+            update() {
+                this.x -= gameSpeed;
+            }
+
+            draw() {
+                if (cactusImg.complete && cactusImg.naturalWidth > 0) {
+                    const sourceWidth = cactusImg.naturalWidth * this.srcWidthPercent;
+                    ctx.drawImage(
+                        cactusImg,
+                        0, 0,
+                        sourceWidth, cactusImg.naturalHeight,
+                        this.x, this.y,
+                        this.baseWidth, this.baseHeight
+                    );
+                } else {
+                    ctx.fillStyle = '#808080';
+                    ctx.fillRect(this.x, this.y, this.baseWidth, this.baseHeight);
+                }
+            }
+
+            getBounds() {
+                return {
+                    left: this.x + 2,
+                    right: this.x + this.baseWidth - 2,
+                    top: this.y + 2,
+                    bottom: this.y + this.baseHeight
+                };
+            }
+        }
+
+        class GroundLine {
+            constructor() {
+                this.y = BASE_HEIGHT - 30;
+                this.dashX = 0;
+            }
+
+            update() {
+                this.dashX -= gameSpeed;
+                if (this.dashX <= -BASE_WIDTH) this.dashX = 0;
+            }
+
+            draw() {
+                ctx.strokeStyle = '#535353';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, this.y);
+                ctx.lineTo(BASE_WIDTH, this.y);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#ababab';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for (let i = 0; i < 3; i++) {
+                    let lx = (this.dashX + (i * 300)) % BASE_WIDTH;
+                    if (lx < 0) lx += BASE_WIDTH;
+                    ctx.moveTo(lx, this.y + 6);
+                    ctx.lineTo(lx + 15, this.y + 6);
+                    ctx.moveTo(lx + 40, this.y + 12);
+                    ctx.lineTo(lx + 50, this.y + 12);
+                }
+                ctx.stroke();
+            }
+        }
+
+        class Cloud {
+            constructor() {
+                this.x = BASE_WIDTH + Math.random() * 150;
+                this.y = 30 + Math.random() * 60;
+                this.speed = 0.4 + Math.random() * 0.6;
+                
+                // 40% chance to pick your uploaded custom image variant
+                this.type = Math.random() < 0.4 ? 'custom' : 'basic';
+                
+                if (this.type === 'custom') {
+                    this.width = 45;
+                    this.height = 45;
+                } else {
+                    this.width = 40 + Math.random() * 20;
+                    this.height = 15;
+                }
+            }
+
+            update() {
+                this.x -= this.speed;
+            }
+
+            draw() {
+                if (this.type === 'custom' && fCloudImg.complete && fCloudImg.naturalWidth > 0) {
+                    ctx.drawImage(fCloudImg, this.x, this.y, this.width, this.height);
+                } else {
+                    // Basic cloud fallback geometry
+                    ctx.fillStyle = '#dcdcdc';
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+        }
+
+        // --- INSTANTIATION & LOOP ENGINE ---
+        let player;
+        let floor;
+        let obstacles = [];
+        let clouds = [];
+        let obstacleTimer = 0;
+
+        function initGame() {
+            player = new Dino();
+            floor = new GroundLine();
+            obstacles = [];
+            clouds = [];
+            score = 0;
+            gameSpeed = 6;
+            obstacleTimer = 0;
+        }
+
+        function spawnObstacles() {
+            obstacleTimer++;
+            if (obstacleTimer > 180 + Math.random() * 50) {
+                obstacles.push(new Obstacle());
+                obstacleTimer = 0;
+            }
+        }
+
+        function spawnClouds() {
+            if (clouds.length < 5 && Math.random() < 0.008) {
+                clouds.push(new Cloud());
+            }
+        }
+
+        function checkCollision(rect1, rect2) {
+            return rect1.left < rect2.right &&
+                   rect1.right > rect2.left &&
+                   rect1.top < rect2.bottom &&
+                   rect1.bottom > rect2.top;
+        }
+
+        function formatScore(num) {
+            return String(Math.floor(num)).padStart(5, '0');
+        }
+
+        function drawScore() {
+            ctx.fillStyle = '#535353';
+            ctx.font = "16px monospace";
+            ctx.textAlign = "right";
+            ctx.fillText(`HI ${formatScore(highScore)}  ${formatScore(score)}`, BASE_WIDTH - 20, 30);
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            cancelAnimationFrame(animationFrameId);
+            
+            if (score > highScore) {
+                highScore = score;
+            }
+
+            finalScoreSpan.innerText = formatScore(score);
+            finalHighscoreSpan.innerText = formatScore(highScore);
+            
+            gameTitle.innerText = "GAME OVER";
+            scoreSummary.style.display = "block";
+            startBtn.innerText = "RESTART";
+            uiOverlay.classList.remove('hidden');
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            ctx.clearRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
+
+            score += 0.15;
+            gameSpeed += 0.001; 
+            
+            spawnObstacles();
+            spawnClouds();
+
+            floor.update();
+            player.update();
+
+            clouds.forEach((cloud, index) => {
+                cloud.update();
+                if (cloud.x + cloud.width < 0) clouds.splice(index, 1);
+            });
+
+            let playerBounds = player.getBounds();
+            
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].update();
+                
+                if (checkCollision(playerBounds, obstacles[i].getBounds())) {
+                    gameOver();
+                    return;
+                }
+
+                if (obstacles[i].x + obstacles[i].baseWidth < 0) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            clouds.forEach(cloud => cloud.draw());
+            floor.draw();
+            obstacles.forEach(obs => obs.draw());
+            player.draw();
+            drawScore();
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- GLOBAL ACTION INTERCEPTORS ---
+        function triggerJump(e) {
+            // Ignore spacebar verification checks if it's a click or touch event
+            if (e.type === 'keydown' && e.code !== 'Space') return;
+            
+            // Prevent interference if clicking the Start UI button element directly
+            if (e.target === startBtn) return;
+
+            if (isPlaying) {
+                player.jump();
+                if (e.cancelable) e.preventDefault(); 
+            }
+        }
+
+        // Bound event listeners globally to the 'window' frame instead of just the canvas element
+        window.addEventListener('keydown', triggerJump);
+        window.addEventListener('mousedown', triggerJump);
+        window.addEventListener('touchstart', triggerJump, { passive: false });
+
+        startBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents instant triggering of a jump sequence upon game boot
+            uiOverlay.classList.add('hidden');
+            initGame();
+            isPlaying = true;
+            gameLoop();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+name: Generate HTML Dashboard
+
+on:
+  push:
+    branches:
+      - main # Change this to master if your default branch is named master
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Compile template into index.html
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+
+        const pagesDir = path.join(process.cwd(), 'Pages');
+        const templatePath = path.join(process.cwd(), 'template.html');
+        const indexPath = path.join(process.cwd(), 'index.html');
+
+        if (!fs.existsSync(templatePath)) {
+            console.error('Error: template.html missing!');
+            process.exit(1);
+        }
+
+        // Find all game directories inside /Pages
+        let folders = [];
+        if (fs.existsSync(pagesDir)) {
+            folders = fs.readdirSync(pagesDir).filter(file => {
+                return fs.statSync(path.join(pagesDir, file)).isDirectory();
+            });
+        }
+
+        // Build the HTML cards string dynamic block
+        let cardsHtml = '';
+        folders.forEach(folder => {
+            const metaPath = path.join(pagesDir, folder, 'meta.json');
+            const expectedBannerPath = path.join(pagesDir, folder, 'banner.png');
+            
+            // Clean up camelCase/PascalCase folder names for title fallback
+            let title = folder.replace(/([A-Z])/g, ' $1').trim();
+            let description = 'Click to play!';
+            
+            // Use local banner if present, otherwise fallback to root Assets
+            let banner = fs.existsSync(expectedBannerPath) 
+                ? 'Pages/' + folder + '/banner.png' 
+                : 'Assets/default-banner.png';
+
+            if (fs.existsSync(metaPath)) {
+                try {
+                    const metaData = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+                    title = metaData.title || title;
+                    description = metaData.description || description;
+                } catch (e) {
+                    console.log('Error parsing meta.json in ' + folder);
+                }
+            }
+
+            // Append standard card layout block 
+            cardsHtml += '        <div class=\"card\" onclick=\"window.location.href=\'Pages/' + folder + '/index.html\'\">\n';
+            cardsHtml += '             <img src=\"' + banner + '\" alt=\"' + title + '\" onerror=\"this.src=\'Assets/default-banner.png\'\">\n';
+            cardsHtml += '             <h3>' + title + '</h3>\n';
+            cardsHtml += '             <p>' + description + '</p>\n';
+            cardsHtml += '        </div>\n\n';
+        });
+
+        // Read the blueprint blueprint layout
+        let templateContent = fs.readFileSync(templatePath, 'utf8');
+
+        // Target the precise injection placeholder boundaries
+        const regex = /()[\s\S]*?()/;
+        
+        // Splice in the generated DOM string array
+        const updatedContent = templateContent.replace(regex, '$1\n' + cardsHtml + '        $2');
+
+        // Write content cleanly to root index.html file
+        fs.writeFileSync(indexPath, updatedContent);
+        console.log('Successfully generated new index.html with ' + folders.length + ' cards!');
+        "
+
+    - name: Commit and Push updated index.html
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add index.html
+        git diff-index --quiet HEAD || git commit -m "Automated compile of index.html [skip ci]"
+        git push
