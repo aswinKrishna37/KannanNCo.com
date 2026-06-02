@@ -7,7 +7,7 @@
     // 1. Load your textless background image
     const img = new Image();
     // CHANGE THIS TO YOUR TEXTLESS IMAGE FILENAME
-    img.src = 'background.jpg'; 
+    img.src = 'Assets/background.jpg'; 
 
     // Once the image loads, initialize canvas sizes and draw
     img.onload = function() {
