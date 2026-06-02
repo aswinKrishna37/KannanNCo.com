@@ -9,3 +9,7 @@ document.getElementById('RPS').addEventListener('click', function() {
 document.getElementById('OMM').addEventListener('click', function() {
     window.location.href = 'MakeYourOwnMathewMeme/OMM.html';
   });
+
+document.getElementById('Cortisol').addEventListener('click', function() {
+    window.location.href = 'CortisolGallery/cortisol.html';
+  });

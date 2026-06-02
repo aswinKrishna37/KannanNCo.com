@@ -19,13 +19,6 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* .header h1{
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-} */
-
 .header img {
     display: block;
     margin: 0 auto;
@@ -35,8 +28,7 @@ body {
     height: auto;
 }
 
-
-#IMAGE{
+#IMAGE {
     display: block;
     max-height: 50vh;
     max-width: 80%;
@@ -47,9 +39,11 @@ body {
 
 .cortisol-container {
     display: flex;
+    flex-direction: column; /* Stack scale and slider vertically */
     justify-content: center;
     align-items: center;
     margin-bottom: 5vh;
+    gap: 20px;             /* Space between gauge and slider */
 }
 
 .scale-wrapper {
@@ -74,4 +68,81 @@ body {
     left: 50%;
     margin-left: -17.5px;
     margin-top: -40px;
+}
+
+/* --- Slider Styles --- */
+/* --- Slider Styles --- */
+.slider-container {
+    width: 80%;
+    max-width: 400px;
+    display: none; /* Hidden by default on PC/Desktop */
+    margin: 0 auto;
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Custom styling for the range input to match reference theme */
+.slider-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 12px;
+    background: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+}
+
+/* Focus state matching the reference input's look */
+.slider-container input[type="range"]:focus {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+/* WebKit/Blink (Chrome, Safari, Edge, Opera) - Thumb styles */
+.slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background-color: #000000;
+    border: 2px solid #000000;
+    border-radius: 3px; /* Slightly square-rounded corners like inputs/buttons */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:hover {
+    background-color: #ffffff;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:active {
+    transform: scale(0.95);
+}
+
+/* Firefox - Thumb styles */
+.slider-container input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background-color: #000000;
+    border: 2px solid #000000;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.slider-container input[type="range"]::-moz-range-thumb:hover {
+    background-color: #ffffff;
+}
+
+.slider-container input[type="range"]::-moz-range-thumb:active {
+    transform: scale(0.95);
+}
+
+/* Show slider and adapt styles only on mobile/touch screens */
+@media (hover: none) and (pointer: coarse) {
+    .slider-container {
+        display: block; /* Show slider on touch devices */
+    }
 }
