@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Fetch all history so git merges/pushes work smoothly
+        fetch-depth: 0 # Fetch all history so git merges work smoothly
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -61,7 +61,6 @@ jobs:
             });
         }
 
-        // 1. Gather all game data arrays first to allow sorting
         let gamesList = [];
 
         folders.forEach(folder => {
@@ -70,7 +69,7 @@ jobs:
             
             let title = folder.replace(/([A-Z])/g, ' $1').trim();
             let description = 'Click to play!';
-            let order = 9999; // Default large number so unordered games drop to the bottom
+            let order = 9999;
 
             let banner = fs.existsSync(expectedBannerPath) 
                 ? 'Pages/' + folder + '/banner.png' 
@@ -92,7 +91,6 @@ jobs:
             gamesList.push({ folder, title, description, banner, order });
         });
 
-        // 2. Sort the list by order index asc (lowest value first), fallback to alphabetical order
         gamesList.sort((a, b) => {
             if (a.order !== b.order) {
                 return a.order - b.order;
@@ -100,7 +98,6 @@ jobs:
             return a.title.localeCompare(b.title);
         });
 
-        // 3. Loop through the sorted array objects and append HTML blocks
         let cardsHtml = '';
         gamesList.forEach(game => {
             cardsHtml += '        <div class=\"card\" onclick=\"window.location.href=\'Pages/' + game.folder + '/index.html\'\">\n';
@@ -120,18 +117,12 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         
-        # Stage the generated index file
         git add index.html
         
-        # Check if there are actual layout changes before trying to push
         if ! git diff-index --quiet HEAD; then
           git commit -m "Automated compile of index.html [skip ci]"
-          
-          # Pull down any incoming rapid changes from your friend using rebase to prevent local histories from breaking
           git pull origin main --rebase
-          
-          # Push cleanly back up to the cloud
           git push origin main
         else
-          console.log("No layout changes detected. Skipping push.")
+          echo "No layout changes detected. Skipping push."
         fi
