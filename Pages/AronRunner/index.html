@@ -21,7 +21,6 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            /* Ensures clicking the background works seamlessly on mobile devices */
             touch-action: manipulation; 
         }
 
@@ -42,7 +41,7 @@
             height: 100%;
         }
 
-        #ui-overlay {
+        #ui-overlay, #loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -56,16 +55,43 @@
             z-index: 10;
         }
 
-        #ui-overlay.hidden {
-            display: none;
+        #loading-overlay {
+            background: #ffffff;
+            z-index: 30; /* Places it completely above everything initially */
+            transition: opacity 0.3s ease;
         }
 
-        #game-title {
+        .hidden {
+            display: none !important;
+        }
+
+        #game-title, #loading-title {
             font-size: 26px;
             color: #535353;
             margin-bottom: 5px;
             font-weight: bold;
             letter-spacing: 2px;
+        }
+
+        #loading-subtitle {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        #skip-hint {
+            font-size: 12px;
+            color: #ababab;
+            margin-top: 15px;
+            font-family: monospace;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
         }
 
         #score-summary {
@@ -90,7 +116,7 @@
             transition: all 0.2s ease;
             letter-spacing: 1px;
             position: relative;
-            z-index: 20; /* Ensures the button sits reliably above global tap listeners */
+            z-index: 20;
         }
 
         .btn:hover {
@@ -102,8 +128,15 @@
 <body>
 
     <div id="game-container">
+        <div id="loading-overlay">
+            <div id="loading-title">LOADING ASSETS</div>
+            <div id="loading-subtitle">0%</div>
+            <div id="skip-hint">PRESS [ E ] TO SKIP</div>
+        </div>
+
         <canvas id="gameCanvas"></canvas>
-        <div id="ui-overlay">
+        
+        <div id="ui-overlay" class="hidden">
             <div id="game-title">DINO RUNNER</div>
             <div id="score-summary">
                 <div>SCORE: <span id="final-score">00000</span></div>
@@ -118,6 +151,8 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const uiOverlay = document.getElementById('ui-overlay');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingSubtitle = document.getElementById('loading-subtitle');
         const startBtn = document.getElementById('start-btn');
         const gameTitle = document.getElementById('game-title');
         const scoreSummary = document.getElementById('score-summary');
@@ -133,7 +168,45 @@
         let score = 0;
         let highScore = 0;
         let isPlaying = false;
+        let isLoading = true;
         let animationFrameId;
+
+        // --- LOADING SCREEN LOGIC ---
+        const LOADING_DURATION = 10000; // 8 seconds
+        let loadingStartTime = Date.now();
+
+        function updateLoadingProgress() {
+            if (!isLoading) return;
+
+            let elapsed = Date.now() - loadingStartTime;
+            let progress = Math.min((elapsed / LOADING_DURATION) * 100, 100);
+            
+            loadingSubtitle.innerText = `${Math.floor(progress)}%`;
+
+            if (elapsed >= LOADING_DURATION) {
+                endLoading();
+            } else {
+                requestAnimationFrame(updateLoadingProgress);
+            }
+        }
+
+        function endLoading() {
+            if (!isLoading) return;
+            isLoading = false;
+            loadingOverlay.classList.add('hidden');
+            uiOverlay.classList.remove('hidden'); // Reveal main menu after load
+        }
+
+        // Key interceptor specifically looking for the 'E' skip key
+        window.addEventListener('keydown', (e) => {
+            if (isLoading && (e.key === 'e' || e.key === 'E')) {
+                endLoading();
+            }
+        });
+
+        // Initialize progress tracker on load
+        requestAnimationFrame(updateLoadingProgress);
+
 
         // --- ASSET LOADING ---
         const dinoImg = new Image();
@@ -284,7 +357,6 @@
                 this.y = 30 + Math.random() * 60;
                 this.speed = 0.4 + Math.random() * 0.6;
                 
-                // 40% chance to pick your uploaded custom image variant
                 this.type = Math.random() < 0.4 ? 'custom' : 'basic';
                 
                 if (this.type === 'custom') {
@@ -304,7 +376,6 @@
                 if (this.type === 'custom' && fCloudImg.complete && fCloudImg.naturalWidth > 0) {
                     ctx.drawImage(fCloudImg, this.x, this.y, this.width, this.height);
                 } else {
-                    // Basic cloud fallback geometry
                     ctx.fillStyle = '#dcdcdc';
                     ctx.fillRect(this.x, this.y, this.width, this.height);
                 }
@@ -422,10 +493,10 @@
 
         // --- GLOBAL ACTION INTERCEPTORS ---
         function triggerJump(e) {
-            // Ignore spacebar verification checks if it's a click or touch event
+            // Prevent actions if game assets are still loading
+            if (isLoading) return;
+
             if (e.type === 'keydown' && e.code !== 'Space') return;
-            
-            // Prevent interference if clicking the Start UI button element directly
             if (e.target === startBtn) return;
 
             if (isPlaying) {
@@ -434,13 +505,12 @@
             }
         }
 
-        // Bound event listeners globally to the 'window' frame instead of just the canvas element
         window.addEventListener('keydown', triggerJump);
         window.addEventListener('mousedown', triggerJump);
         window.addEventListener('touchstart', triggerJump, { passive: false });
 
         startBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevents instant triggering of a jump sequence upon game boot
+            e.stopPropagation(); 
             uiOverlay.classList.add('hidden');
             initGame();
             isPlaying = true;
