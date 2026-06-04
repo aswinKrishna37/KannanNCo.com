@@ -65,15 +65,15 @@ jobs:
 
         folders.forEach(folder => {
             const metaPath = path.join(pagesDir, folder, 'meta.json');
-            const expectedBannerPath = path.join(pagesDir, folder, 'banner.png');
+            const expectedBannerPath = path.join(pagesDir, folder, 'banner.webp');
             
             let title = folder.replace(/([A-Z])/g, ' $1').trim();
             let description = 'Click to play!';
             let order = 9999;
 
             let banner = fs.existsSync(expectedBannerPath) 
-                ? 'Pages/' + folder + '/banner.png' 
-                : 'Assets/default-banner.png';
+                ? 'Pages/' + folder + '/banner.webp' 
+                : 'Assets/default-banner.webp';
 
             if (fs.existsSync(metaPath)) {
                 try {
@@ -101,7 +101,7 @@ jobs:
         let cardsHtml = '';
         gamesList.forEach(game => {
             cardsHtml += '        <div class=\"card\" onclick=\"window.location.href=\'Pages/' + game.folder + '/index.html\'\">\n';
-            cardsHtml += '             <img src=\"' + game.banner + '\" alt=\"' + game.title + '\" onerror=\"this.src=\'Assets/default-banner.png\'\">\n';
+            cardsHtml += '             <img src=\"' + game.banner + '\" alt=\"' + game.title + '\" onerror=\"this.src=\'Assets/default-banner.webp\'\">\n';
             cardsHtml += '             <h3>' + game.title + '</h3>\n';
             cardsHtml += '             <p>' + game.description + '</p>\n';
             cardsHtml += '        </div>\n\n';
