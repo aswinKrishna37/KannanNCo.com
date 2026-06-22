@@ -196,44 +196,72 @@
         // Game variables
         let gameState = 'start'; // start, playing, gameOver
         let score = 0;
-        let gravity = 0.6;
-        let gameSpeed = 5;
+        let gravity = 0.2;
+        let gameSpeed = window.innerWidth < 768 ? 1.2 : 4;
 
         // Bird object
         const bird = {
             x: canvas.width * 0.2,
             y: canvas.height / 2,
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             dy: 0,
-            image: new Image(),
+            
+            // --- ANIMATION PROPERTIES ---
+            images: [],
+            currentFrame: 0,
+            frameTimer: 0,
+            frameInterval: 10, // Swaps images every 10 frames (~6 times a second)
+            
             draw() {
-                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                const activeImage = this.images[this.currentFrame];
+                if (activeImage && activeImage.complete) {
+                    ctx.drawImage(activeImage, this.x, this.y, this.width, this.height);
+                }
             },
             update() {
                 this.dy += gravity;
                 this.dy = Math.min(this.dy, 10);
                 this.y += this.dy;
+
+                // --- TRACK ANIMATION FRAME ---
+                if (gameState === 'playing' && this.images.length > 0) {
+                    this.frameTimer++;
+                    if (this.frameTimer >= this.frameInterval) {
+                        this.frameTimer = 0;
+                        this.currentFrame = (this.currentFrame + 1) % this.images.length;
+                    }
+                }
             },
             flap() {
-                this.dy = -8;
+                this.dy = -4;
             }
         };
 
-        // Load bird image
-        bird.image.src = 'ASSETS/FaheemNOBg-Inverted.png';
+        // --- LOAD ANIMATION FRAMES ---
+        // Make sure these two separate files exist in your folder setup!
+        const frameSources = [
+            'Flappy_Bird_assets/Game Objects/flappy_faheem_bird_up.png',
+            'Flappy_Bird_assets/Game Objects/flappy_faheem_bird_down.png'
+        ];
+
+        frameSources.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            bird.images.push(img);
+        });
 
         // Background image
         const backgroundImg = new Image();
-        backgroundImg.src = 'Flappy_Bird_assets by kosresetr55/Game Objects/background-day.png';
+        backgroundImg.src = 'Flappy_Bird_assets/Game Objects/background-day.png';
 
         // Base image
         const baseImg = new Image();
-        baseImg.src = 'Flappy_Bird_assets by kosresetr55/Game Objects/base.png';
+        baseImg.src = 'Flappy_Bird_assets/Game Objects/base.png';
 
         // Pipe image
         const pipeImg = new Image();
-        pipeImg.src = 'Flappy_Bird_assets by kosresetr55/Game Objects/pipe-green.png';
+        pipeImg.src = 'Flappy_Bird_assets/Game Objects/pipe-green.png';
 
         // Base object
         const base = {
@@ -370,6 +398,8 @@
             score = 0;
             bird.y = canvas.height / 2;
             bird.dy = 0;
+            bird.currentFrame = 0;
+            bird.frameTimer = 0;
             document.getElementById('scoreDisplay').textContent = 'Score: 0';
             document.getElementById('gameOverScreen').classList.remove('show');
             setTimeout(() => {
