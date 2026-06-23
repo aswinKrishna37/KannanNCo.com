@@ -13,8 +13,8 @@
         }
 
         body {
-            background-color: #f1f2f6;
-            color: #333;
+            background-color: #f7f9fa;
+            color: #2c3e50;
             padding-bottom: 40px;
         }
 
@@ -49,7 +49,7 @@
         }
 
         .btn-top-work {
-            background-color: #3498db;
+            background-color: #e2a41a;
             color: white;
             padding: 8px 16px;
             font-size: 0.9rem;
@@ -61,7 +61,7 @@
         }
 
         .btn-top-work:hover {
-            background-color: #2980b9;
+            background-color: #c98f12;
         }
 
         /* Profile Header Section */
@@ -71,6 +71,8 @@
             text-align: center;
             margin-bottom: 25px;
             position: relative;
+            border-bottom: 4px solid #e2a41a;
+            border-radius: 4px 4px 0 0;
         }
 
         .profile-pic {
@@ -79,6 +81,7 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 15px;
+            border: 3px solid #e2a41a;
         }
 
         .header h1 {
@@ -88,7 +91,7 @@
 
         /* Money Sticky Bar */
         .money-bar {
-            background-color: #2ecc71;
+            background-color: #e2a41a;
             color: white;
             text-align: center;
             padding: 20px;
@@ -99,6 +102,7 @@
             z-index: 100;
             margin-bottom: 25px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
 
         /* Responsive Grid for Shop Items */
@@ -106,26 +110,6 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-        }
-
-        /* Mobile Layout Breakpoints */
-        @media (max-width: 900px) {
-            .shop-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .shop-grid {
-                grid-template-columns: 1fr;
-            }
-            .money-bar {
-                font-size: 1.8rem;
-                padding: 15px;
-            }
-            .modal-buttons {
-                grid-template-columns: 1fr !important;
-            }
         }
 
         /* Individual Card Design */
@@ -137,6 +121,9 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #eef0f2;
         }
 
         .item-img {
@@ -153,7 +140,7 @@
         }
 
         .item-price {
-            color: #2ecc71;
+            color: #e2a41a;
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 15px;
@@ -180,6 +167,7 @@
 
         .btn:disabled {
             background-color: #bdc3c7 !important;
+            color: #7f8c8d !important;
             cursor: not-allowed;
         }
 
@@ -194,12 +182,12 @@
         }
 
         .btn-buy {
-            background-color: #2ecc71;
+            background-color: #e2a41a;
             color: white;
         }
 
         .btn-buy:hover {
-            background-color: #27ae60;
+            background-color: #c98f12;
         }
 
         .item-count {
@@ -216,6 +204,122 @@
             -webkit-appearance: none;
             margin: 0;
         }
+
+        /* --- MODERN RESPONSIVE JOB GRID --- */
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .job-card {
+            background: white;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            border: 1px solid #eef0f2;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+        }
+
+        .job-details h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .job-meta-metrics {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .metric-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .metric-badge.duration {
+            color: #7f8c8d;
+            border: 1px solid #e1e4e6;
+        }
+
+        .metric-badge.payout {
+            color: #b58110;
+            background-color: #fdf6e7;
+            border: 1px solid #f9e7c4;
+        }
+
+        /* FIXED PROGRESS BAR LAYOUT */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e1e4e6;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: block; 
+            visibility: hidden; 
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #e2a41a;
+            width: 0%;
+            border-radius: 4px;
+        }
+
+        .btn-job {
+            background-color: #e2a41a;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-job:hover:not(:disabled) {
+            background-color: #c98f12;
+        }
+
+        .work-header {
+            background: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            border-left: 4px solid #e2a41a;
+        }
+
+        .btn-back {
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn-back:hover { background-color: #2c3e50; }
 
         /* --- POPUP OVERLAY STYLING --- */
         .modal-overlay {
@@ -241,6 +345,7 @@
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             animation: popIn 0.3s ease-out;
+            position: relative;
         }
 
         @keyframes popIn {
@@ -248,9 +353,25 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        .btn-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #bdc3c7;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .btn-modal-close:hover { color: #7f8c8d; }
+
         .modal-img {
             width: 100%;
-            max-height: 250px;
+            max-height: 500px;
             object-fit: cover;
             border-radius: 6px;
             margin-bottom: 20px;
@@ -270,97 +391,27 @@
             margin-top: 15px;
         }
 
-        .btn-modal-reset {
-            background-color: #e74c3c;
-            color: white;
-        }
+        .btn-modal-reset { background-color: #e74c3c; color: white; }
         .btn-modal-reset:hover { background-color: #c0392b; }
 
-        .btn-modal-work {
-            background-color: #3498db;
-            color: white;
-        }
-        .btn-modal-work:hover { background-color: #2980b9; }
+        .btn-modal-work { background-color: #e2a41a; color: white; }
+        .btn-modal-work:hover { background-color: #c98f12; }
 
-        /* --- WORK PAGE VIEW STYLING --- */
-        .view-section {
-            display: none;
-        }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
 
-        .view-section.active {
-            display: block;
+        /* Mobile Layout Breakpoints */
+        @media (max-width: 900px) {
+            .shop-grid { grid-template-columns: repeat(2, 1fr); }
+            .job-grid { grid-template-columns: 1fr; gap: 15px; }
         }
 
-        .work-header {
-            background: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .btn-back {
-            background-color: #34495e;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .job-card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .job-details h3 {
-            font-size: 1.2rem;
-            margin-bottom: 4px;
-        }
-
-        .job-details p {
-            color: #7f8c8d;
-            font-size: 0.95rem;
-        }
-
-        .job-pay {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .job-action {
-            min-width: 140px;
-            text-align: right;
-        }
-
-        .btn-job {
-            background-color: #2ecc71;
-            color: white;
-            width: 100%;
-        }
-        
-        .progress-bar-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            margin-top: 8px;
-            display: none;
-            height: 8px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width linear;
+        @media (max-width: 600px) {
+            .shop-grid { grid-template-columns: 1fr; }
+            .money-bar { font-size: 1.8rem; padding: 15px; }
+            .modal-buttons { grid-template-columns: 1fr !important; }
+            .work-header { flex-direction: column; gap: 12px; text-align: center; }
+            .btn-back { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -375,7 +426,7 @@
             </div>
 
             <div class="header">
-                <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=400" alt="Aron" class="profile-pic">
+                <img src="./ASSETS/aron_pfp.png" alt="Aron" class="profile-pic">
                 <h1>Spend Aron's Money</h1>
             </div>
 
@@ -391,14 +442,16 @@
 
             <div class="money-bar class-money-display">₹13,000</div>
             
-            <div id="job-list"></div>
+            <div class="job-grid" id="job-list"></div>
         </div>
 
     </div>
 
     <div class="modal-overlay" id="broke-modal">
         <div class="modal-box">
-            <img src="https://images.unsplash.com/photo-1584824486509-112e4181ff6b?w=500" alt="Broke" class="modal-img">
+            <button class="btn-modal-close" onclick="closeBrokeModal()">&times;</button>
+            
+            <img src="./ASSETS/aron_sad.webp" alt="Broke" class="modal-img">
             <div class="modal-title">You made Aron go broke!</div>
             <div class="modal-buttons">
                 <button class="btn btn-modal-reset" onclick="triggerFullReset()">Reset</button>
@@ -410,32 +463,44 @@
     <script>
         const STARTING_BALANCE = 13000;
         
-        // Load data from LocalStorage if available, otherwise launch fresh
         let currentBalance = localStorage.getItem('aron_balance') !== null ? parseInt(localStorage.getItem('aron_balance')) : STARTING_BALANCE;
         let inventory = localStorage.getItem('aron_inventory') !== null ? JSON.parse(localStorage.getItem('aron_inventory')) : {};
         
-        // Tracks whether the user closed the broke modal manually
         let isBrokeModalDismissed = false;
+        let isBusted = false; 
 
-        // ==========================================
-        //  EASILY EDIT OR ADD NEW SHOP ITEMS HERE
-        // ==========================================
         const shopItems = [
-            { id: "big-mac", name: "Big Mac", price: 2, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
-            { id: "flip-flops", name: "Flip Flops", price: 1000, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=300" },
-            { id: "coca-cola", name: "Coca-Cola Pack", price: 12000, image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" }
+            { id: "x-box", name: "Xbox Game Pass", price: 1089, image: "./ASSETS/menu/x-box.webp" },
+            { id: "bindu-green-apple", name: "Bindu Green Apple Juice", price: 10, image: "./ASSETS/menu/bindu-green-apple.webp" },
+            { id: "melody", name: "Melody Chocolaty", price: 1, image: "./ASSETS/menu/melody.webp" },
+            { id: "lays", name: "Melody Chocolaty", price: 45, image: "./ASSETS/menu/lays.webp" },
+            { id: "egg-puffs", name: "Egg Puffs", price: 20, image: "./ASSETS/menu/egg-puffs.webp" },
+            { id: "biriyani", name: "Chicken Biriyani", price: 110, image: "./ASSETS/menu/biriyani.webp" },
+            { id: "muthoot-cap", name: "Muthoot Cap", price: 999, image: "./ASSETS/menu/muthoot-cap.webp" },
+            { id: "cavins", name: "Cavins MilkShake", price: 37, image: "./ASSETS/menu/cavins.webp" },
+            { id: "icecream", name: "Cornetto Icecream", price: 50, image: "./ASSETS/menu/icecream.webp" },
+            { id: "movie-ticket", name: "Cinema Ticket", price: 399, image: "./ASSETS/menu/movie-ticket.webp" },
+            { id: "gta", name: "GTA VI", price: 6999, image: "./ASSETS/menu/gta.webp" },
+            { id: "plant", name: "Plant a Sapling🙌🏻", price: 50, image: "./ASSETS/menu/plant.webp" },
+            { id: "cat", name: "Adopt a car🥺", price: 200, image: "./ASSETS/menu/cat.webp" },
+            { id: "ball", name: "BALL", price: 15, image: "./ASSETS/menu/ball.webp" },
+            { id: "glasses", name: "Heldish Silver Black Square Sunglasses", price: 1499, image: "./ASSETS/menu/glasses.webp" },
+            { id: "jordans", name: "Air Jordan 1 Retro", price: 39215, image: "./ASSETS/menu/jordans.webp" },
+            { id: "gold", name: "18 carat 1g Gold", price: 10939, image: "./ASSETS/menu/gold.webp" },
+            { id: "aron", name: "Aron Pokemon Card", price: 490, image: "./ASSETS/menu/aron.webp" }
         ];
 
-        // ==========================================
-        //  EASILY EDIT OR ADD NEW JOBS HERE (Time in Seconds)
-        // ==========================================
         const jobItems = [
-            { id: "wash-dishes", name: "Wash Dishes", pay: 50, duration: 3 },
-            { id: "deliver-pizza", name: "Deliver Pizza", pay: 250, duration: 8 },
-            { id: "code-website", name: "Freelance Coding", pay: 1500, duration: 15 }
+            { id: "constable", name: "Constable Part Time", pay: 150, duration: 12 },
+            { id: "feet-pics", name: "Sell Feet Pics", pay: 800, duration: 6 },
+            { id: "jonny-sins", name: "Collab with Jonny Sins", pay: 900, duration: 3 },
+            { id: "barista", name: "Barista", pay: 80, duration: 20 },
+            { id: "jason", name: "Go to Palarivattom with Aaron Jason", pay: 500, duration: 25 },
+            { id: "illegal", name: "Sell Drugs", pay: 1200, duration: 6 },
+            { id: "swiggy", name: "Swiggy Delivery Partner", pay: 5, duration: 1 },
+            { id: "data", name: "Data Entry", pay: 60, duration: 9 }
         ];
 
-        // Setup empty tracks for inventory configs if clean launch
         shopItems.forEach(item => {
             if (inventory[item.id] === undefined) inventory[item.id] = 0;
         });
@@ -461,14 +526,16 @@
             switchView('work-view');
         }
 
-        // Master display management updates
+        function closeBrokeModal() {
+            isBrokeModalDismissed = true;
+            modalEl.style.display = 'none';
+        }
+
         function renderInterface() {
-            // Update all displays using the global currency formatter
             document.querySelectorAll('.class-money-display').forEach(el => {
                 el.innerText = "₹" + currentBalance.toLocaleString();
             });
 
-            // 1. Render Store Front
             gridEl.innerHTML = '';
             shopItems.forEach(item => {
                 const count = inventory[item.id];
@@ -487,7 +554,6 @@
                 gridEl.appendChild(card);
             });
 
-            // 2. Render Job Selection
             jobListEl.innerHTML = '';
             jobItems.forEach(job => {
                 const card = document.createElement('div');
@@ -495,84 +561,102 @@
                 card.innerHTML = `
                     <div class="job-details">
                         <h3>${job.name}</h3>
-                        <p>Takes ${job.duration}s • <span class="job-pay">₹${job.pay}</span></p>
-                        <div class="progress-bar-container" id="progress-container-${job.id}">
-                            <div class="progress-bar" id="progress-${job.id}"></div>
+                        <div class="job-meta-metrics">
+                            <span class="metric-badge duration">⏱️ ${job.duration}s</span>
+                            <span class="metric-badge payout">💰 ₹${job.pay}</span>
                         </div>
                     </div>
-                    <div class="job-action">
-                        <button class="btn btn-job" id="btn-job-${job.id}" onclick="startJob('${job.id}')">Work</button>
+                    <div class="progress-bar-container" id="progress-container-${job.id}">
+                        <div class="progress-bar" id="progress-${job.id}"></div>
                     </div>
+                    <button class="btn btn-job" id="btn-job-${job.id}" onclick="startJob('${job.id}')">Start Work</button>
                 `;
                 jobListEl.appendChild(card);
             });
 
-            // Trigger Modal only if wallet drops to 0 AND player hasn't already clicked "Go Work"
-            if (currentBalance === 0 && !isBrokeModalDismissed) {
+            const modalTitleEl = modalEl.querySelector('.modal-title');
+            if (isBusted) {
+                modalTitleEl.innerText = "Aron got busted by the cops and lost 80% of his money!";
+            } else {
+                modalTitleEl.innerText = "You made Aron go broke!";
+            }
+
+            if ((currentBalance === 0 || isBusted) && !isBrokeModalDismissed) {
                 modalEl.style.display = 'flex';
             } else {
                 modalEl.style.display = 'none';
             }
         }
 
-        // Logic for working system
         window.startJob = function(jobId) {
             const job = jobItems.find(j => j.id === jobId);
             const buttons = document.querySelectorAll('.btn-job');
+            const targetButton = document.getElementById(`btn-job-${jobId}`);
             const container = document.getElementById(`progress-container-${jobId}`);
             const bar = document.getElementById(`progress-${jobId}`);
 
-            // Lock actions while active
             buttons.forEach(b => b.disabled = true);
-            container.style.display = 'block';
+            
+            targetButton.innerText = "Working...";
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+            container.style.visibility = 'visible';
+            
+            bar.offsetWidth; 
+
+            bar.style.transition = `width ${job.duration}s linear`;
             bar.style.width = '100%';
-            bar.style.transitionDuration = `${job.duration}s`;
 
             setTimeout(() => {
-                currentBalance += job.pay;
-                
-                if (currentBalance > 0) {
-                    isBrokeModalDismissed = false;
+                if (job.id === "illegal" && Math.random() < 0.55) {
+                    currentBalance = Math.floor(currentBalance * 0.2); 
+                    isBusted = true;
+                } else {
+                    currentBalance += job.pay;
+                    isBusted = false;
                 }
+
+                isBrokeModalDismissed = false; 
                 
                 saveState();
                 
-                bar.style.transitionDuration = '0s';
+                bar.style.transition = 'none';
                 bar.style.width = '0%';
-                container.style.display = 'none';
+                container.style.visibility = 'hidden';
                 
-                buttons.forEach(b => b.disabled = false);
+                buttons.forEach(b => {
+                    b.disabled = false;
+                    b.innerText = "Start Work";
+                });
                 renderInterface();
             }, job.duration * 1000);
         };
 
-        // Buy Action Code 
         window.buyItem = function(id) {
             const item = shopItems.find(i => i.id === id);
             if (currentBalance >= item.price) {
                 currentBalance -= item.price;
                 inventory[id]++; 
+                isBusted = false;
+                isBrokeModalDismissed = false; 
                 saveState();
                 renderInterface();
             }
         };
 
-        // Sell Action Code (Returns 50% cash)
         window.sellItem = function(id) {
             const item = shopItems.find(i => i.id === id);
             if (inventory[id] > 0) {
                 const returnValue = Math.floor(item.price * 0.7); 
                 currentBalance += returnValue;
                 inventory[id]--;
-                
-                if (currentBalance > 0) isBrokeModalDismissed = false;
-
+                isBrokeModalDismissed = false;
+                isBusted = false;
                 saveState();
                 renderInterface();
             }
         };
 
-        // Manual Text Fields Override Controller
         window.updateCount = function(id, value) {
             const item = shopItems.find(i => i.id === id);
             let targetCount = parseInt(value) || 0;
@@ -582,38 +666,36 @@
             const difference = targetCount - currentCount;
 
             if (difference > 0) {
-                // User is buying items manually
                 const totalCost = difference * item.price;
                 if (totalCost <= currentBalance) {
                     currentBalance -= totalCost;
                     inventory[id] = targetCount;
+                    isBrokeModalDismissed = false;
                     saveState();
                 }
             } else if (difference < 0) {
-                // User is selling items manually (Return 50%)
                 const itemsToSell = Math.abs(difference);
                 const returnValue = itemsToSell * Math.floor(item.price * 0.5);
                 currentBalance += returnValue;
                 inventory[id] = targetCount;
-                
-                if (currentBalance > 0) isBrokeModalDismissed = false;
+                isBrokeModalDismissed = false;
+                isBusted = false;
                 saveState();
             }
             renderInterface();
         };
 
-        // Master Data Purge & Wipe Trigger
         window.triggerFullReset = function() {
             localStorage.removeItem('aron_balance');
             localStorage.removeItem('aron_inventory');
             currentBalance = STARTING_BALANCE;
             isBrokeModalDismissed = false; 
+            isBusted = false;
             shopItems.forEach(item => inventory[item.id] = 0);
             modalEl.style.display = 'none';
             switchView('spend-view');
         };
 
-        // Initialize display configuration draw
         renderInterface();
     </script>
 </body>
