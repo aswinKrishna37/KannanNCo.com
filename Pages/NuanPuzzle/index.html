@@ -7,10 +7,33 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { font-family: sans-serif; background: #1e1e24; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; }
-        h2 { margin-bottom: 10px; font-size: 1.5rem; text-align: center; }
+        h2 { margin-bottom: 5px; font-size: 1.5rem; text-align: center; }
+        
+        /* Styled Image Selector Container */
+        .selector-container {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        select {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            border: 2px solid #3f3f4e;
+            background: #2c2c35;
+            color: white;
+            cursor: pointer;
+            outline: none;
+        }
+        select:focus {
+            border-color: #2ecc71;
+        }
+
         #game-container { position: relative; width: 90vmin; height: 90vmin; max-width: 500px; max-height: 500px; background: #2c2c35; border: 4px solid #3f3f4e; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); overflow: hidden; }
-        .piece { position: absolute; cursor: grab; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3); touch-action: none; border-radius: 4px; }
-        .piece:active { cursor: grabbing; z-index: 1000; box-shadow: 0 8px 16px rgba(0,0,0,0.6); }
+        .piece { position: absolute; cursor: grab; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3); touch-action: none; border-radius: 0px; }
+        .piece:active { cursor: grabbing; box-shadow: 0 8px 16px rgba(0,0,0,0.6); }
         #win-message { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46, 204, 113, 0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 2000; border-radius: 4px; animation: fadeIn 0.5s ease forwards; }
         h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         button { padding: 12px 24px; font-size: 1rem; border: none; background: white; color: #2ecc71; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
@@ -21,6 +44,16 @@
 
     <h2>Solve the Puzzle!</h2>
 
+    <div class="selector-container">
+        <label for="image-select">Choose Image:</label>
+        <select id="image-select" onchange="changeImage()">
+            <option value="Assets/pic1.jpg" selected>Picture 1</option>
+            <option value="Assets/pic2.jpg">Picture 2</option>
+            <option value="Assets/pic3.jpg">Picture 3</option>
+            <option value="Assets/pic4.jpg">Picture 4</option>
+        </select>
+    </div>
+
     <div id="game-container">
         <div id="win-message">
             <h1>🎉 You Win!</h1>
@@ -30,12 +63,14 @@
 
 <script>
     // ================= CONFIGURATION =================
-    const PUZZLE_IMAGE = 'pic1.jpg'; // <-- REPLACE WITH YOUR IMAGE FILE NAME
-    const GRID_SIZE = 3;                  // <-- Change to 4 or 5 for more pieces
+    const GRID_SIZE = 5; // <-- Change to 4 or 5 for more pieces
     // =================================================
 
     const container = document.getElementById('game-container');
     const winMessage = document.getElementById('win-message');
+    const imageSelect = document.getElementById('image-select');
+    
+    let puzzleImage = imageSelect.value; // Instantly tracks chosen asset option
     let pieces = [];
     let boardSize = container.clientWidth;
     let pieceSize = boardSize / GRID_SIZE;
@@ -54,7 +89,6 @@
                 piece.element.style.left = `${piece.correctX * pieceSize}px`;
                 piece.element.style.top = `${piece.correctY * pieceSize}px`;
             } else {
-                // Keep relative positions during resize if scattered
                 piece.element.style.left = `${piece.currentXPercent * boardSize}px`;
                 piece.element.style.top = `${piece.currentYPercent * boardSize}px`;
             }
@@ -67,13 +101,17 @@
         document.querySelectorAll('.piece').forEach(el => el.remove());
         pieces = [];
 
+        // Dynamic adjustment for current container space layout
+        boardSize = container.clientWidth;
+        pieceSize = boardSize / GRID_SIZE;
+
         for (let y = 0; y < GRID_SIZE; y++) {
             for (let x = 0; x < GRID_SIZE; x++) {
                 const div = document.createElement('div');
                 div.classList.add('piece');
                 div.style.width = `${pieceSize}px`;
                 div.style.height = `${pieceSize}px`;
-                div.style.backgroundImage = `url('${PUZZLE_IMAGE}')`;
+                div.style.backgroundImage = `url('${puzzleImage}')`;
                 div.style.backgroundSize = `${boardSize}px ${boardSize}px`;
                 div.style.backgroundPosition = `-${x * pieceSize}px -${y * pieceSize}px`;
 
@@ -99,7 +137,8 @@
         pieces.forEach(piece => {
             piece.isLocked = false;
             piece.element.style.pointerEvents = 'auto';
-            piece.element.style.border = 'none';
+            piece.element.style.boxShadow = 'inset 0 0 0 1px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3)';
+            piece.element.style.zIndex = '10'; // Reset unplaced pieces to middle layer
 
             // Generate completely random positions within the board bounds
             const maxTopPercent = (boardSize - pieceSize) / boardSize;
@@ -114,14 +153,19 @@
         });
     }
 
+    // Dropdown change event logic
+    function changeImage() {
+        puzzleImage = imageSelect.value;
+        initPuzzle();
+    }
+
     function addDragListeners(piece) {
         const el = piece.element;
         let startX, startY, initialLeft, initialTop;
 
-        // Universal handler for both Touch and Mouse
         const startDrag = (e) => {
             if (piece.isLocked) return;
-            el.style.zIndex = "1000";
+            el.style.zIndex = "1000"; // Top layer when dragging
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -138,7 +182,7 @@
         };
 
         const drag = (e) => {
-            if (e.cancelable) e.preventDefault(); // Stop mobile scrolling while dragging
+            if (e.cancelable) e.preventDefault(); 
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -149,7 +193,6 @@
             let newLeft = initialLeft + deltaX;
             let newTop = initialTop + deltaY;
 
-            // Boundary constraints to keep pieces inside the box
             newLeft = Math.max(0, Math.min(newLeft, boardSize - pieceSize));
             newTop = Math.max(0, Math.min(newTop, boardSize - pieceSize));
 
@@ -161,7 +204,6 @@
         };
 
         const endDrag = () => {
-            el.style.zIndex = "";
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('touchmove', drag);
             document.removeEventListener('mouseup', endDrag);
@@ -180,17 +222,19 @@
         const currentLeft = piece.element.offsetLeft;
         const currentTop = piece.element.offsetTop;
 
-        // Snap threshold: if within 15% of the piece size, lock it into place
         const threshold = pieceSize * 0.25;
 
         if (Math.abs(currentLeft - targetLeft) < threshold && Math.abs(currentTop - targetTop) < threshold) {
             piece.element.style.left = `${targetLeft}px`;
             piece.element.style.top = `${targetTop}px`;
-            piece.element.style.pointerEvents = 'none'; // Lock from future drags
+            piece.element.style.pointerEvents = 'none'; 
             piece.element.style.boxShadow = 'none';
+            piece.element.style.zIndex = '1'; // Move locked piece to the bottom layer
             piece.isLocked = true;
 
             checkWinCondition();
+        } else {
+            piece.element.style.zIndex = '10'; // Revert back to unplaced middle layer if not snapped
         }
     }
 
@@ -203,7 +247,6 @@
         }
     }
 
-    // Fire it up when the image loads to ensure proportions are correct
     window.onload = () => {
         initPuzzle();
     };
