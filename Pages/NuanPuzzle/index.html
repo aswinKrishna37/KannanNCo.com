@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nuan Jigsaw Puzzle</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { font-family: sans-serif; background: #1e1e24; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; }
+        h2 { margin-bottom: 10px; font-size: 1.5rem; text-align: center; }
+        #game-container { position: relative; width: 90vmin; height: 90vmin; max-width: 500px; max-height: 500px; background: #2c2c35; border: 4px solid #3f3f4e; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); overflow: hidden; }
+        .piece { position: absolute; cursor: grab; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.3); touch-action: none; border-radius: 4px; }
+        .piece:active { cursor: grabbing; z-index: 1000; box-shadow: 0 8px 16px rgba(0,0,0,0.6); }
+        #win-message { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(46, 204, 113, 0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 2000; border-radius: 4px; animation: fadeIn 0.5s ease forwards; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        button { padding: 12px 24px; font-size: 1rem; border: none; background: white; color: #2ecc71; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <h2>Solve the Puzzle!</h2>
+
+    <div id="game-container">
+        <div id="win-message">
+            <h1>🎉 You Win!</h1>
+            <button onclick="shufflePieces()">Play Again</button>
+        </div>
+    </div>
+
+<script>
+    // ================= CONFIGURATION =================
+    const PUZZLE_IMAGE = 'pic1.jpg'; // <-- REPLACE WITH YOUR IMAGE FILE NAME
+    const GRID_SIZE = 3;                  // <-- Change to 4 or 5 for more pieces
+    // =================================================
+
+    const container = document.getElementById('game-container');
+    const winMessage = document.getElementById('win-message');
+    let pieces = [];
+    let boardSize = container.clientWidth;
+    let pieceSize = boardSize / GRID_SIZE;
+
+    // Handle responsiveness on resize
+    window.addEventListener('resize', () => {
+        boardSize = container.clientWidth;
+        pieceSize = boardSize / GRID_SIZE;
+        pieces.forEach(piece => {
+            piece.element.style.width = `${pieceSize}px`;
+            piece.element.style.height = `${pieceSize}px`;
+            piece.element.style.backgroundSize = `${boardSize}px ${boardSize}px`;
+            piece.element.style.backgroundPosition = `-${piece.correctX * pieceSize}px -${piece.correctY * pieceSize}px`;
+            
+            if (piece.isLocked) {
+                piece.element.style.left = `${piece.correctX * pieceSize}px`;
+                piece.element.style.top = `${piece.correctY * pieceSize}px`;
+            } else {
+                // Keep relative positions during resize if scattered
+                piece.element.style.left = `${piece.currentXPercent * boardSize}px`;
+                piece.element.style.top = `${piece.currentYPercent * boardSize}px`;
+            }
+        });
+    });
+
+    function initPuzzle() {
+        winMessage.style.display = 'none';
+        // Clear previous pieces if resetting
+        document.querySelectorAll('.piece').forEach(el => el.remove());
+        pieces = [];
+
+        for (let y = 0; y < GRID_SIZE; y++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                const div = document.createElement('div');
+                div.classList.add('piece');
+                div.style.width = `${pieceSize}px`;
+                div.style.height = `${pieceSize}px`;
+                div.style.backgroundImage = `url('${PUZZLE_IMAGE}')`;
+                div.style.backgroundSize = `${boardSize}px ${boardSize}px`;
+                div.style.backgroundPosition = `-${x * pieceSize}px -${y * pieceSize}px`;
+
+                const pieceObj = {
+                    element: div,
+                    correctX: x,
+                    correctY: y,
+                    isLocked: false,
+                    currentXPercent: 0,
+                    currentYPercent: 0
+                };
+
+                addDragListeners(pieceObj);
+                container.appendChild(div);
+                pieces.push(pieceObj);
+            }
+        }
+        shufflePieces();
+    }
+
+    function shufflePieces() {
+        winMessage.style.display = 'none';
+        pieces.forEach(piece => {
+            piece.isLocked = false;
+            piece.element.style.pointerEvents = 'auto';
+            piece.element.style.border = 'none';
+
+            // Generate completely random positions within the board bounds
+            const maxTopPercent = (boardSize - pieceSize) / boardSize;
+            const randomXPercent = Math.random() * maxTopPercent;
+            const randomYPercent = Math.random() * maxTopPercent;
+
+            piece.currentXPercent = randomXPercent;
+            piece.currentYPercent = randomYPercent;
+
+            piece.element.style.left = `${randomXPercent * boardSize}px`;
+            piece.element.style.top = `${randomYPercent * boardSize}px`;
+        });
+    }
+
+    function addDragListeners(piece) {
+        const el = piece.element;
+        let startX, startY, initialLeft, initialTop;
+
+        // Universal handler for both Touch and Mouse
+        const startDrag = (e) => {
+            if (piece.isLocked) return;
+            el.style.zIndex = "1000";
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            startX = clientX;
+            startY = clientY;
+            initialLeft = el.offsetLeft;
+            initialTop = el.offsetTop;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        };
+
+        const drag = (e) => {
+            if (e.cancelable) e.preventDefault(); // Stop mobile scrolling while dragging
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+
+            let newLeft = initialLeft + deltaX;
+            let newTop = initialTop + deltaY;
+
+            // Boundary constraints to keep pieces inside the box
+            newLeft = Math.max(0, Math.min(newLeft, boardSize - pieceSize));
+            newTop = Math.max(0, Math.min(newTop, boardSize - pieceSize));
+
+            el.style.left = `${newLeft}px`;
+            el.style.top = `${newTop}px`;
+            
+            piece.currentXPercent = newLeft / boardSize;
+            piece.currentYPercent = newTop / boardSize;
+        };
+
+        const endDrag = () => {
+            el.style.zIndex = "";
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+
+            checkSnap(piece);
+        };
+
+        el.addEventListener('mousedown', startDrag);
+        el.addEventListener('touchstart', startDrag, { passive: true });
+    }
+
+    function checkSnap(piece) {
+        const targetLeft = piece.correctX * pieceSize;
+        const targetTop = piece.correctY * pieceSize;
+        const currentLeft = piece.element.offsetLeft;
+        const currentTop = piece.element.offsetTop;
+
+        // Snap threshold: if within 15% of the piece size, lock it into place
+        const threshold = pieceSize * 0.25;
+
+        if (Math.abs(currentLeft - targetLeft) < threshold && Math.abs(currentTop - targetTop) < threshold) {
+            piece.element.style.left = `${targetLeft}px`;
+            piece.element.style.top = `${targetTop}px`;
+            piece.element.style.pointerEvents = 'none'; // Lock from future drags
+            piece.element.style.boxShadow = 'none';
+            piece.isLocked = true;
+
+            checkWinCondition();
+        }
+    }
+
+    function checkWinCondition() {
+        const allLocked = pieces.every(p => p.isLocked);
+        if (allLocked) {
+            setTimeout(() => {
+                winMessage.style.display = 'flex';
+            }, 400);
+        }
+    }
+
+    // Fire it up when the image loads to ensure proportions are correct
+    window.onload = () => {
+        initPuzzle();
+    };
+</script>
+
+</body>
+</html>
